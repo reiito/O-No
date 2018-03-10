@@ -17,11 +17,9 @@ public class PlayerController : MonoBehaviour
   public Transform shotSpawn;
   public float fireRate = 1.0f;
 
-  public Slider healthSlider;
-
   float playerHealth;
   float dyingSpeed = 2.0f;
-  bool controlType;
+  bool staticControls;
   float nextFire = 0.0f;
   float rotationSpeed = 150.0f;
   float thrustForce = 15.0f;
@@ -29,25 +27,17 @@ public class PlayerController : MonoBehaviour
   private void Start()
   {
     // Get game controller reference
-    GameObject gameControllerObject = GameObject.FindWithTag("GameController");
-    gameController = gameControllerObject.GetComponent<GameController>();
+    gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
     // Set control type in menu to use on player
-    controlType = Convert.ToBoolean(PlayerPrefs.GetInt("static", 0));
+    staticControls = Convert.ToBoolean(PlayerPrefs.GetInt("staticControls", 0));
 
     playerHealth = 100.0f;
-    UpdateHealthSlider();
+    gameController.uiManager.UpdatePlayerHealthSlider(playerHealth);
   }
 
   private void Update()
   {
-    // Kill switch
-    if (Input.GetKeyDown("1"))
-    {
-      playerHealth = 0.0f;
-      UpdateHealthSlider();
-    }
-
     // Fire shot with the given fire rate
     if (Input.GetButton("Jump") && Time.time > nextFire)
     {
@@ -59,28 +49,26 @@ public class PlayerController : MonoBehaviour
     if (gameController.GetDying())
     {
       playerHealth -= Time.deltaTime * dyingSpeed;
-      UpdateHealthSlider();
+      gameController.uiManager.UpdatePlayerHealthSlider(playerHealth);
     }
 
     // Game over check
     if (playerHealth <= 0)
       KillPlayer();
+
+    if (gameController.GetDebug())
+      DebugControls();
   }
 
   private void FixedUpdate()
   {
+    // Rotate player
+    transform.Rotate(0, 0, -Input.GetAxis("Horizontal") * rotationSpeed * Time.deltaTime);
     // Switch control type
-    if (!controlType)
-    {
-      // Rotate player
-      transform.Rotate(0, 0, -Input.GetAxis("Horizontal") * rotationSpeed * Time.deltaTime);
-      // Move player
+    if (!staticControls) //Move player
       GetComponent<Rigidbody2D>().AddForce(transform.up * thrustForce * Input.GetAxis("Vertical"));
-    }
     else
-    {
-      //TODO: change controle type to non-slidy
-    }
+      GetComponent<Rigidbody2D>().velocity = transform.up * thrustForce * Input.GetAxis("Vertical");
 
     // Set boundries
     GetComponent<Rigidbody2D>().position = new Vector2
@@ -96,8 +84,23 @@ public class PlayerController : MonoBehaviour
     Destroy(gameObject);
   }
 
-  void UpdateHealthSlider()
+  void DebugControls()
   {
-    healthSlider.value = playerHealth;
+    // Kill switch
+    if (Input.GetKeyDown("1") && playerHealth > 0.0f)
+    {
+      playerHealth = 0.0f;
+      gameController.uiManager.UpdatePlayerHealthSlider(playerHealth);
+      Debug.Log("[DEBUG] Player Manually Killed");
+    }
+
+    // Control type toggle
+    if (Input.GetKeyDown("3"))
+    {
+      staticControls = !staticControls;
+      Debug.Log("[DEBUG] Control Type: " + (staticControls ? "STATIC" : "FLOATY"));
+    }
   }
+
+  public float GetPlayerHealth() { return playerHealth; }
 }

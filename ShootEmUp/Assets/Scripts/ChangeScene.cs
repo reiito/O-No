@@ -12,8 +12,8 @@ public class ChangeScene : MonoBehaviour
   public void CheckToggle(Toggle toggle)
   {
     if (toggle.isOn)
-      PlayerPrefs.SetInt("static", 1);
+      PlayerPrefs.SetInt("staticControls", 1);
     else
-      PlayerPrefs.SetInt("static", 0);
+      PlayerPrefs.SetInt("staticControls", 0);
   }
 }

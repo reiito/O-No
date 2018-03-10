@@ -8,17 +8,18 @@ public class TickByBoundry : MonoBehaviour
 
   private void Start()
   {
-    GameObject gameControllerObject = GameObject.FindWithTag("GameController");
-    gameController = gameControllerObject.GetComponent<GameController>();
+    gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
   }
 
   private void OnTriggerExit2D(Collider2D collision)
   {
-    gameController.SetDying(true);
+    if (collision.tag == "Player")
+      gameController.SetDying(true);
   }
 
   private void OnTriggerEnter2D(Collider2D collision)
   {
-    gameController.SetDying(false);
+    if (collision.tag == "Player")
+      gameController.SetDying(false);
   }
 }
