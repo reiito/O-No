@@ -3,10 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-class ScoreManager
+public class ScoreManager
 {
   int score;
   int highScore;
+
+  // getters
+  public int GetScore() { return score; }
+  public int GetHighScore() { return highScore; }
+
+  // utility
+  public void AddScore(int addValue) { score += addValue; }
 
   public void InitScore()
   {
@@ -25,9 +32,6 @@ class ScoreManager
     highScore = score;
     PlayerPrefs.SetInt("highScore", highScore);
   }
-
-  public int GetScore() { return score; }
-  public int GetHighScore() { return highScore; }
 }
 
 [System.Serializable]
@@ -40,20 +44,19 @@ public class UIManager
   public Button restartButton;
   public Button menuButton;
 
+  // updaters
+  public void UpdateScoreText(int score) { scoreText.text = "Score: " + score; }
+  public void UpdatePlayerHealthSlider(float newHealth) { playerHealthSlider.value = newHealth; }
+
   public void InitUI(float playerHealth)
   {
-    scoreText.text = "Score: " + 0;
+    UpdateScoreText(0);
     UpdatePlayerHealthSlider(playerHealth);
     endSubText.text = "High Score: " + 0;
     endText.enabled = false;
     endSubText.enabled = false;
     restartButton.gameObject.SetActive(false);
     menuButton.gameObject.SetActive(false);
-  }
-
-  public void UpdatePlayerHealthSlider(float newHealth)
-  {
-    playerHealthSlider.value = newHealth;
   }
 
   public void GameOverUI(bool win, int endScore)
@@ -84,12 +87,12 @@ public class UIManager
 
 public class GameController : MonoBehaviour
 {
-  public PlayerController playerController;
   public GameObject closingCircleObject;
   public float endScale = 0.75f;
   public UIManager uiManager;
+  public ScoreManager scoreManager;
 
-  ScoreManager scoreManager;
+  PlayerController playerController;
   ChangeScene sceneChanger;
 
   Vector3 startCircleScale;
@@ -101,18 +104,29 @@ public class GameController : MonoBehaviour
   bool gameOver;
   bool won;
 
-  // Debugging
+  // debugging
   bool debugging;
+
+  // getters
+  public bool GetDying() { return tickDying; }
+  public bool GetGameOver() { return gameOver; }
+  public bool GetDebug() { return debugging; }
+
+  // setters
+  public void SetDying(bool value) { tickDying = value; }
+  public void SetGameOver(bool result) { gameOver = result; }
 
   private void Start()
   {
+    // set player controller reference
     playerController = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
+    // set up game varaibles
     InitializeGame();
   }
 
   private void Update()
   {
-    // Close in on the end scale then expand at the end of the game 
+    // close in on the end scale then expand at the end of the game 
     if (!gameOver)
     {
       if (circleCloseStart)
@@ -124,14 +138,14 @@ public class GameController : MonoBehaviour
       tickDying = false;
     }
 
-    // Circle closed and player wins
+    // winning condtion (circle closed)
     if (closingCircleObject.transform.localScale.x <= endScale + 0.05)
     {
       gameOver = true;
       won = true;
     }
 
-    // On Game Over
+    // game over actions
     if (gameOver)
     {
       scoreManager.SaveHighScore(uiManager.endSubText);
@@ -139,7 +153,7 @@ public class GameController : MonoBehaviour
       uiManager.DisableStartUI();
     }
 
-    // Debug Toggle
+    // debug toggle
     if (Input.GetKeyDown("`"))
     {
       debugging = !debugging;
@@ -166,12 +180,6 @@ public class GameController : MonoBehaviour
     won = false;
     debugging = true;
   }
-
-  public bool GetDying() { return tickDying; }
-  public bool GetDebug() { return debugging; }
-
-  public void SetDying(bool value) { tickDying = value; }
-  public void SetGameOver(bool result) { gameOver = result; }
 
   void QuitGame()
   {
