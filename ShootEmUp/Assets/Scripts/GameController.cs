@@ -38,6 +38,7 @@ public class ScoreManager
 public class UIManager
 {
   public Text scoreText;
+  public Text powerShotText;
   public Slider playerHealthSlider;
   public Text endText;
   public Text endSubText;
@@ -46,11 +47,13 @@ public class UIManager
 
   // updaters
   public void UpdateScoreText(int score) { scoreText.text = "Score: " + score; }
+  public void UpdatePowerShotText(int amount) { powerShotText.text = "Shockwave: " + amount; }
   public void UpdatePlayerHealthSlider(float newHealth) { playerHealthSlider.value = newHealth; }
 
-  public void InitUI(float playerHealth)
+  public void InitUI(float playerHealth, int powerAmount)
   {
     UpdateScoreText(0);
+    UpdatePowerShotText(powerAmount);
     UpdatePlayerHealthSlider(playerHealth);
     endSubText.text = "High Score: " + 0;
     endText.enabled = false;
@@ -81,6 +84,7 @@ public class UIManager
   public void DisableStartUI()
   {
     scoreText.enabled = false;
+    powerShotText.enabled = false;
     playerHealthSlider.gameObject.SetActive(false);
   }
 }
@@ -97,7 +101,7 @@ public class GameController : MonoBehaviour
 
   Vector3 startCircleScale;
   Vector3 endCircleScale;
-  float circleSpeed = 0.1f;
+  float circleSpeed = 0.25f;
   float endCircleSpeed = 5.0f;
   bool circleCloseStart;
   bool tickDying;
@@ -149,7 +153,7 @@ public class GameController : MonoBehaviour
     if (gameOver)
     {
       scoreManager.SaveHighScore(uiManager.endSubText);
-      uiManager.GameOverUI(won, scoreManager.GetHighScore());
+      uiManager.GameOverUI(won, scoreManager.GetScore());
       uiManager.DisableStartUI();
     }
 
@@ -159,6 +163,7 @@ public class GameController : MonoBehaviour
       debugging = !debugging;
       Debug.Log("Debug: " + (debugging ? "ON" : "OFF"));
     }
+
     // TODO: menu/pause on escape
     if (debugging)
       DebugControls();
@@ -170,7 +175,7 @@ public class GameController : MonoBehaviour
   {
     scoreManager = new ScoreManager();
     scoreManager.InitScore();
-    uiManager.InitUI(playerController.GetPlayerHealth());
+    uiManager.InitUI(playerController.GetPlayerHealth(), playerController.powerShot);
     sceneChanger = this.GetComponent<ChangeScene>();
     startCircleScale = closingCircleObject.transform.localScale;
     endCircleScale = new Vector3(endScale, endScale, 1.0f);

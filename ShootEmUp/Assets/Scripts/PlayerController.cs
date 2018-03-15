@@ -11,27 +11,49 @@ public class Boundry
 public class PlayerController : MonoBehaviour
 {
   public Boundry boundry;
-  public float rotationSpeed = 150.0f;
-  public float thrustForce = 25.0f;
+  public float thrustForce = 50.0f;
 
   public GameObject shot;
   public Transform shotSpawn;
   public float fireRate = 1.0f;
+  public int powerShot = 3;
 
   GameController gameController;
+  Transform powerShotTransform;
+  float rotationSize;
+  float rotationSpeed;
+  Vector3 powerMaxScale;
+  Vector3 powerMinScale;
+  float powerExpandRate;
   float playerHealth;
   float dyingSpeed = 2.0f;
+  bool powerShotUsed;
   bool staticControls;
   float nextFire = 0.0f;
+
+  // getters
+  //public int GetPowerShot() { return powerShot; }
+  public float GetPlayerHealth() { return playerHealth; }
 
   private void Start()
   {
     // set game controller reference
     gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
+    powerShotTransform = GameObject.Find("PowerCircle").GetComponent<Transform>();
+
+    powerMaxScale = new Vector3(15.0f, 15.0f, 15.0f);
+    powerMinScale = new Vector3(0.1f, 0.1f, 0.1f);
+    powerExpandRate = 0.25f;
+
+    rotationSize = 250.0f;
+    rotationSpeed = 0.75f;
+
+    powerShotUsed = false;
 
     // set control type from menu to use on player
     staticControls = Convert.ToBoolean(PlayerPrefs.GetInt("staticControls", 0));
 
+    // initialise player health & slider
     playerHealth = 100.0f;
     gameController.uiManager.UpdatePlayerHealthSlider(playerHealth);
   }
@@ -43,6 +65,18 @@ public class PlayerController : MonoBehaviour
     {
       nextFire = Time.time + fireRate; //adjust fire rate
       Instantiate(shot, new Vector3(shotSpawn.transform.position.x, shotSpawn.transform.position.y, shotSpawn.transform.position.z), transform.rotation); //spawn shot
+    }
+
+    if (Input.GetKeyDown("z") && powerShot != 0)
+    {
+      powerShotUsed = true;
+      powerShot--;
+      gameController.uiManager.UpdatePowerShotText(powerShot);
+    }
+
+    if (powerShotUsed)
+    {
+      PowerShot();
     }
 
     // chip away at the player's health while they're outside the circle
@@ -64,7 +98,7 @@ public class PlayerController : MonoBehaviour
   private void FixedUpdate()
   {
     // rotate player
-    transform.Rotate(0, 0, -Input.GetAxis("Horizontal") * rotationSpeed * Time.deltaTime);
+    transform.Rotate(0, 0, -Input.GetAxis("Horizontal") * rotationSize * (Time.deltaTime / rotationSpeed));
     // switch control type
     if (!staticControls) //move player
       GetComponent<Rigidbody2D>().AddForce(transform.up * thrustForce * Input.GetAxis("Vertical"));
@@ -77,6 +111,17 @@ public class PlayerController : MonoBehaviour
       Mathf.Clamp(GetComponent<Rigidbody2D>().position.x, boundry.xMin, boundry.xMax),
       Mathf.Clamp(GetComponent<Rigidbody2D>().position.y, boundry.yMin, boundry.yMax)
     );
+  }
+
+  // power shot controller
+  void PowerShot()
+  {
+    powerShotTransform.localScale = Vector3.Lerp(powerShotTransform.localScale, powerMaxScale, Time.deltaTime / powerExpandRate);
+    if (powerShotTransform.localScale.x >= powerMaxScale.x - 1.0f) // new Vector3(1.0f, 1.0f, 1.0f))
+    {
+      powerShotTransform.localScale = powerMinScale;
+      powerShotUsed = false;
+    }
   }
 
   void KillPlayer()
@@ -108,6 +153,4 @@ public class PlayerController : MonoBehaviour
     playerHealth -= damage;
     gameController.uiManager.UpdatePlayerHealthSlider(playerHealth);
   }
-
-  public float GetPlayerHealth() { return playerHealth; }
 }

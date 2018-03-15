@@ -28,7 +28,7 @@ public class ShotController : MonoBehaviour
       return;
 
     // TODO: take health away from player
-    if (collision.tag == "Player")
+    if (collision.tag == "Player" && !gameController.GetGameOver())
     {
       Destroy(this.gameObject);
       playerController.DamagePlayer(shotDamage);

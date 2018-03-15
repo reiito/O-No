@@ -11,11 +11,19 @@ public class ChangeScene : MonoBehaviour
   }
 
   // check control toggle setting to send to next scene 
-  public void CheckToggle(Toggle toggle)
+  public void CheckControlToggle(Toggle toggle)
   {
     if (toggle.isOn)
       PlayerPrefs.SetInt("staticControls", 1);
     else
       PlayerPrefs.SetInt("staticControls", 0);
+  }
+
+  public void CheckMultiplayerToggle(Toggle toggle)
+  {
+    if (toggle.isOn)
+      PlayerPrefs.SetInt("multiplayer", 1);
+    else
+      PlayerPrefs.SetInt("multiplayer", 0);
   }
 }

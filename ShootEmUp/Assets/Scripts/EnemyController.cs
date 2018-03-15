@@ -48,9 +48,9 @@ public class EnemyController : MonoBehaviour
     else
       GetComponent<Rigidbody2D>().velocity = new Vector2(1, 0) * -10;
 
-    if (transform.position.x <= -34 && comeBack)
+    if (transform.position.x <= -34)
       comeBack = true;
-    else
+    else if (transform.position.x >= 34)
       comeBack = false;
   }
 
