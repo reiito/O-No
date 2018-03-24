@@ -13,18 +13,12 @@ public class ScoreManager
   public int GetHighScore() { return highScore; }
 
   // utility
-  public void AddScore(int addValue) { score += addValue; }
+  public void AddScore(int addValue) { score = score + addValue; }
 
   public void InitScore()
   {
     score = 0;
     highScore = PlayerPrefs.GetInt("highScore", 0);
-  }
-
-  public void IncScore(Text scoreText)
-  {
-    score++;
-    scoreText.text = "Score: " + score;
   }
 
   public void SaveHighScore(Text highScoreText)
@@ -40,10 +34,11 @@ public class UIManager
   public Text scoreText;
   public Text powerShotText;
   public Slider playerHealthSlider;
+  public Text titleText;
   public Text endText;
-  public Text endSubText;
   public Button restartButton;
   public Button menuButton;
+  public Image pausePanel;
 
   // updaters
   public void UpdateScoreText(int score) { scoreText.text = "Score: " + score; }
@@ -55,28 +50,48 @@ public class UIManager
     UpdateScoreText(0);
     UpdatePowerShotText(powerAmount);
     UpdatePlayerHealthSlider(playerHealth);
-    endSubText.text = "High Score: " + 0;
+    endText.text = "High Score: " + 0;
+    titleText.enabled = false;
     endText.enabled = false;
-    endSubText.enabled = false;
     restartButton.gameObject.SetActive(false);
     menuButton.gameObject.SetActive(false);
+    pausePanel.enabled = false;
+  }
+
+  public void PauseUI(bool paused)
+  {
+    if (paused)
+    {
+      pausePanel.enabled = true;
+      titleText.text = "Paused";
+      titleText.enabled = true;
+      restartButton.gameObject.SetActive(true);
+      menuButton.gameObject.SetActive(true);
+    }
+    else
+    {
+      pausePanel.enabled = false;
+      titleText.enabled = false;
+      restartButton.gameObject.SetActive(false);
+      menuButton.gameObject.SetActive(false);
+    }
   }
 
   public void GameOverUI(bool win, int endScore)
   {
     if (!win)
     {
-      endText.text = "Game Over!";
-      endSubText.text = "Score: " + endScore;
+      titleText.text = "Game Over!";
+      endText.text = "Score: " + endScore;
     }
     else
     {
-      endText.text = "Winner!";
-      endSubText.text = "High Score: " + endScore;
+      titleText.text = "Winner!";
+      endText.text = "High Score: " + endScore;
     }
 
+    titleText.enabled = true;
     endText.enabled = true;
-    endSubText.enabled = true;
     restartButton.gameObject.SetActive(true);
     menuButton.gameObject.SetActive(true);
   }
@@ -92,12 +107,13 @@ public class UIManager
 public class GameController : MonoBehaviour
 {
   public GameObject closingCircleObject;
+  public GameObject enemy;
+  public Transform[] spawnPoints = new Transform[8];
   public float endScale = 0.75f;
   public UIManager uiManager;
   public ScoreManager scoreManager;
 
   PlayerController playerController;
-  ChangeScene sceneChanger;
 
   Vector3 startCircleScale;
   Vector3 endCircleScale;
@@ -105,14 +121,17 @@ public class GameController : MonoBehaviour
   float endCircleSpeed = 5.0f;
   bool circleCloseStart;
   bool tickDying;
+  bool gamePaused;
   bool gameOver;
   bool won;
+  int enemiesSpawned;
 
   // debugging
   bool debugging;
 
   // getters
   public bool GetDying() { return tickDying; }
+  public bool GetGamePaused() { return gamePaused; }
   public bool GetGameOver() { return gameOver; }
   public bool GetDebug() { return debugging; }
 
@@ -124,8 +143,11 @@ public class GameController : MonoBehaviour
   {
     // set player controller reference
     playerController = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
+
     // set up game varaibles
     InitializeGame();
+
+    StartCoroutine(SpawnEnemies());
   }
 
   private void Update()
@@ -152,10 +174,13 @@ public class GameController : MonoBehaviour
     // game over actions
     if (gameOver)
     {
-      scoreManager.SaveHighScore(uiManager.endSubText);
+      scoreManager.SaveHighScore(uiManager.endText);
       uiManager.GameOverUI(won, scoreManager.GetScore());
       uiManager.DisableStartUI();
     }
+
+    if (enemiesSpawned > 10)
+      circleCloseStart = true;
 
     // debug toggle
     if (Input.GetKeyDown("`"))
@@ -167,8 +192,14 @@ public class GameController : MonoBehaviour
     // TODO: menu/pause on escape
     if (debugging)
       DebugControls();
-    else if (Input.GetKeyDown("escape")) //put menu here instead
-      sceneChanger.ChangeToScene("Menu");
+    else if (Input.GetKeyDown("escape"))
+    {
+      if (gamePaused)
+        ResumeGame();
+      else
+        PauseGame();
+      uiManager.PauseUI(gamePaused);
+    }
   }
 
   void InitializeGame()
@@ -176,14 +207,37 @@ public class GameController : MonoBehaviour
     scoreManager = new ScoreManager();
     scoreManager.InitScore();
     uiManager.InitUI(playerController.GetPlayerHealth(), playerController.powerShot);
-    sceneChanger = this.GetComponent<ChangeScene>();
     startCircleScale = closingCircleObject.transform.localScale;
     endCircleScale = new Vector3(endScale, endScale, 1.0f);
     circleCloseStart = false;
     tickDying = false;
+    gamePaused = false;
     gameOver = false;
     won = false;
     debugging = true;
+    enemiesSpawned = 0;
+  }
+
+  IEnumerator SpawnEnemies()
+  {
+    while (!gameOver)
+    {
+      Instantiate(enemy, spawnPoints[Random.Range(0, spawnPoints.Length)]);
+      enemiesSpawned++;
+      yield return new WaitForSeconds(2.0f);
+    }
+  }
+
+  void ResumeGame()
+  {
+    Time.timeScale = 1.0f;
+    gamePaused = false;
+  }
+
+  void PauseGame()
+  {
+    Time.timeScale = 0.0f;
+    gamePaused = true;
   }
 
   void QuitGame()

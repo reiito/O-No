@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class ShotController : MonoBehaviour
 {
-  GameController gameController;
-  PlayerController playerController;
-  // shot properties
   public float speed = 100.0f;
   public float shotDamage = 10.0f;
+  public int popEnemyWorth = 10;
+
+  GameController gameController;
+  PlayerController playerController;
+  bool enemyHit;
 
   public void Start()
   {
@@ -19,6 +21,7 @@ public class ShotController : MonoBehaviour
 
     // move shot in its forward facing direction
     GetComponent<Rigidbody2D>().AddForce(transform.up * speed);
+    enemyHit = false;
   }
 
   private void OnTriggerEnter2D(Collider2D collision)
@@ -26,6 +29,12 @@ public class ShotController : MonoBehaviour
     // skip when colliding with boundry objects
     if (collision.tag == "Boundry")
       return;
+
+    if (collision.tag == "Shot")
+    {
+      Destroy(gameObject);
+      Destroy(collision.gameObject);
+    }
 
     // TODO: take health away from player
     if (collision.tag == "Player" && !gameController.GetGameOver())
@@ -39,26 +48,29 @@ public class ShotController : MonoBehaviour
     {
       // popcorn enemy collision action
       Destroy(this.gameObject);
-      Destroy(collision.gameObject);
-      gameController.scoreManager.AddScore(10);
-      gameController.uiManager.UpdateScoreText(gameController.scoreManager.GetScore());
 
-      // TODO: different actions for different enemy types
-      //if (collision.gameObject.GetComponent<Enemy>().type == "pop")
-      //{
-      //  Destroy(collision.gameObject);
-      //}
-      //else
-      //{
-      //  collision.health -= shotDamage;
-      //}
+      // make sure score and enemy is only updated once
+      if (!enemyHit)
+      {
+        if (collision.GetComponent<EnemyController>().GetHitsLeft() > 0)
+          collision.GetComponent<EnemyController>().Hit();
+
+        if (collision.GetComponent<EnemyController>().GetHitsLeft() == 0)
+        {
+          Destroy(collision.gameObject);
+          gameController.scoreManager.AddScore(popEnemyWorth);
+          gameController.uiManager.UpdateScoreText(gameController.scoreManager.GetScore());
+        }
+
+        enemyHit = true;
+      }
     }
   }
 
-  // destroy shot on circle boundry exit
+  // destroy shot on boundry exit
   private void OnTriggerExit2D(Collider2D collision)
   {
     if (collision.tag == "Boundry")
-      Destroy(this.gameObject);
+      Destroy(gameObject);
   }
 }

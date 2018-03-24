@@ -2,12 +2,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-[System.Serializable]
-public class Boundry
-{
-  public float xMin, xMax, yMin, yMax;
-}
-
 public class PlayerController : MonoBehaviour
 {
   public Boundry boundry;
@@ -19,15 +13,12 @@ public class PlayerController : MonoBehaviour
   public int powerShot = 3;
 
   GameController gameController;
-  Transform powerShotTransform;
+  PowerController powerController;
   float rotationSize;
   float rotationSpeed;
-  Vector3 powerMaxScale;
-  Vector3 powerMinScale;
-  float powerExpandRate;
   float playerHealth;
   float dyingSpeed = 2.0f;
-  bool powerShotUsed;
+  bool powerInUse;
   bool staticControls;
   float nextFire = 0.0f;
 
@@ -39,16 +30,12 @@ public class PlayerController : MonoBehaviour
   {
     // set game controller reference
     gameController = GameObject.FindWithTag("GameController").GetComponent<GameController>();
-    powerShotTransform = GameObject.Find("PowerCircle").GetComponent<Transform>();
-
-    powerMaxScale = new Vector3(15.0f, 15.0f, 15.0f);
-    powerMinScale = new Vector3(0.1f, 0.1f, 0.1f);
-    powerExpandRate = 0.25f;
+    powerController = GameObject.Find("PowerCircle").GetComponent<PowerController>();
 
     rotationSize = 250.0f;
     rotationSpeed = 0.75f;
 
-    powerShotUsed = false;
+    powerInUse = false;
 
     // set control type from menu to use on player
     staticControls = Convert.ToBoolean(PlayerPrefs.GetInt("staticControls", 0));
@@ -69,15 +56,13 @@ public class PlayerController : MonoBehaviour
 
     if (Input.GetKeyDown("z") && powerShot != 0)
     {
-      powerShotUsed = true;
+      powerInUse = true;
       powerShot--;
       gameController.uiManager.UpdatePowerShotText(powerShot);
     }
 
-    if (powerShotUsed)
-    {
-      PowerShot();
-    }
+    if (powerInUse)
+      powerInUse = powerController.PowerShoot();
 
     // chip away at the player's health while they're outside the circle
     if (gameController.GetDying())
@@ -108,20 +93,9 @@ public class PlayerController : MonoBehaviour
     // Set boundries
     GetComponent<Rigidbody2D>().position = new Vector2
     (
-      Mathf.Clamp(GetComponent<Rigidbody2D>().position.x, boundry.xMin, boundry.xMax),
-      Mathf.Clamp(GetComponent<Rigidbody2D>().position.y, boundry.yMin, boundry.yMax)
+      Mathf.Clamp(GetComponent<Rigidbody2D>().position.x, boundry.leftSide, boundry.rightSide),
+      Mathf.Clamp(GetComponent<Rigidbody2D>().position.y, boundry.botSide, boundry.topSide)
     );
-  }
-
-  // power shot controller
-  void PowerShot()
-  {
-    powerShotTransform.localScale = Vector3.Lerp(powerShotTransform.localScale, powerMaxScale, Time.deltaTime / powerExpandRate);
-    if (powerShotTransform.localScale.x >= powerMaxScale.x - 1.0f) // new Vector3(1.0f, 1.0f, 1.0f))
-    {
-      powerShotTransform.localScale = powerMinScale;
-      powerShotUsed = false;
-    }
   }
 
   void KillPlayer()

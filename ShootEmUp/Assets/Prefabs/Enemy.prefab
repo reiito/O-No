@@ -53,7 +53,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1596594007315440}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 30, y: -16, z: 0}
+  m_LocalPosition: {x: 0, y: -18, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4979095722898302}
@@ -67,7 +67,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1829614114730944}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalPosition: {x: 0, y: 1.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4115511128518114}
@@ -116,7 +116,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 4, y: 1.86}
+  m_Size: {x: 4.2, y: 2}
   m_EdgeRadius: 0
 --- !u!61 &61715323818497804
 BoxCollider2D:
@@ -156,7 +156,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shot: {fileID: 1873077030944450, guid: ad986e1e54e73f4449a175136ef92163, type: 2}
   shotSpawn: {fileID: 4979095722898302}
-  fireRate: 1
+  fireRate: 0.1
 --- !u!212 &212507492136384660
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -192,7 +192,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 79421f0057a592647b5a233500da0bf4, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

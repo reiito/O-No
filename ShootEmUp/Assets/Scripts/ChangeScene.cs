@@ -7,7 +7,17 @@ public class ChangeScene : MonoBehaviour
   // load desired scene (button press)
   public void ChangeToScene(string scene)
   {
+    Time.timeScale = 1.0f;
     SceneManager.LoadScene(scene);
+  }
+
+  public void QuitGame()
+  {
+#if UNITY_EDITOR
+    UnityEditor.EditorApplication.isPlaying = false;
+#else
+    Application.Quit();
+#endif
   }
 
   // check control toggle setting to send to next scene 
