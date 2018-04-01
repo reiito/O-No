@@ -21,10 +21,20 @@ public class PlayerController : MonoBehaviour
   bool powerInUse;
   bool staticControls;
   float nextFire = 0.0f;
+  bool shotType = false;
 
   // getters
-  //public int GetPowerShot() { return powerShot; }
   public float GetPlayerHealth() { return playerHealth; }
+
+  // setters
+  public void SetShotType(bool value) { shotType = value; }
+
+  // utility
+  public void AddHealth(float value)
+  {
+    playerHealth += value;
+    gameController.uiManager.UpdatePlayerHealthSlider(playerHealth);
+  }
 
   private void Start()
   {

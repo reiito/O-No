@@ -156,7 +156,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shot: {fileID: 1873077030944450, guid: ad986e1e54e73f4449a175136ef92163, type: 2}
   shotSpawn: {fileID: 4979095722898302}
+  healthPickUp: {fileID: 1177746034915320, guid: e5d370dff038dd748a09e7fa1421da0c,
+    type: 2}
+  shotPowerUp: {fileID: 1170256493624372, guid: 09848851c5d583c468d82cb53b0f137f,
+    type: 2}
   fireRate: 0.1
+  dropRate: 0.2
+  deathDamage: 10
 --- !u!212 &212507492136384660
 SpriteRenderer:
   m_ObjectHideFlags: 1
