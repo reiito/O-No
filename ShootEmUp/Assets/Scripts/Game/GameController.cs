@@ -1,129 +1,34 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class ScoreManager
-{
-  int score;
-  int highScore;
-
-  // getters
-  public int GetScore() { return score; }
-  public int GetHighScore() { return highScore; }
-
-  // utility
-  public void AddScore(int addValue) { score = score + addValue; }
-
-  public void InitScore()
-  {
-    score = 0;
-    highScore = PlayerPrefs.GetInt("highScore", 0);
-  }
-
-  public void SaveHighScore(Text highScoreText)
-  {
-    highScore = score;
-    PlayerPrefs.SetInt("highScore", highScore);
-  }
-}
-
-[System.Serializable]
-public class UIManager
-{
-  public Text scoreText;
-  public Text powerShotText;
-  public Slider playerHealthSlider;
-  public Text titleText;
-  public Text endText;
-  public Button restartButton;
-  public Button menuButton;
-  public Image pausePanel;
-
-  // updaters
-  public void UpdateScoreText(int score) { scoreText.text = "Score: " + score; }
-  public void UpdatePowerShotText(int amount) { powerShotText.text = "Shockwave: " + amount; }
-  public void UpdatePlayerHealthSlider(float newHealth) { playerHealthSlider.value = newHealth; }
-
-  public void InitUI(float playerHealth, int powerAmount)
-  {
-    UpdateScoreText(0);
-    UpdatePowerShotText(powerAmount);
-    UpdatePlayerHealthSlider(playerHealth);
-    endText.text = "High Score: " + 0;
-    titleText.enabled = false;
-    endText.enabled = false;
-    restartButton.gameObject.SetActive(false);
-    menuButton.gameObject.SetActive(false);
-    pausePanel.enabled = false;
-  }
-
-  public void PauseUI(bool paused)
-  {
-    if (paused)
-    {
-      pausePanel.enabled = true;
-      titleText.text = "Paused";
-      titleText.enabled = true;
-      restartButton.gameObject.SetActive(true);
-      menuButton.gameObject.SetActive(true);
-    }
-    else
-    {
-      pausePanel.enabled = false;
-      titleText.enabled = false;
-      restartButton.gameObject.SetActive(false);
-      menuButton.gameObject.SetActive(false);
-    }
-  }
-
-  public void GameOverUI(bool win, int endScore)
-  {
-    if (!win)
-    {
-      titleText.text = "Game Over!";
-      endText.text = "Score: " + endScore;
-    }
-    else
-    {
-      titleText.text = "Winner!";
-      endText.text = "High Score: " + endScore;
-    }
-
-    titleText.enabled = true;
-    endText.enabled = true;
-    restartButton.gameObject.SetActive(true);
-    menuButton.gameObject.SetActive(true);
-  }
-
-  public void DisableStartUI()
-  {
-    scoreText.enabled = false;
-    powerShotText.enabled = false;
-    playerHealthSlider.gameObject.SetActive(false);
-  }
-}
 
 public class GameController : MonoBehaviour
 {
+  // public variables
   public GameObject closingCircleObject;
-  public GameObject enemy;
+  public GameObject[] enemies = new GameObject[3];
   public Transform[] spawnPoints = new Transform[8];
   public float endScale = 0.75f;
   public UIManager uiManager;
   public ScoreManager scoreManager;
 
+  // player properties
   PlayerController playerController;
+  bool tickDying;
 
+  // death circle properties
   Vector3 startCircleScale;
   Vector3 endCircleScale;
   float circleSpeed = 0.25f;
   float endCircleSpeed = 5.0f;
   bool circleCloseStart;
-  bool tickDying;
+
+  // game state
   bool gamePaused;
   bool gameOver;
   bool won;
+
+  // enemy properties
   int enemiesSpawned;
 
   // debugging
@@ -139,7 +44,7 @@ public class GameController : MonoBehaviour
   public void SetDying(bool value) { tickDying = value; }
   public void SetGameOver(bool result) { gameOver = result; }
 
-  private void Start()
+  private void Awake()
   {
     // set player controller reference
     playerController = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
@@ -200,13 +105,24 @@ public class GameController : MonoBehaviour
         PauseGame();
       uiManager.PauseUI(gamePaused);
     }
+
+    if (playerController.GetShotType())
+    {
+      uiManager.shotTimeOutSlider.gameObject.SetActive(true);
+      uiManager.UpdateShotTimeOutSlider(playerController.GetShotTimeLeft());
+      Vector3 sliderToPlayer = Camera.main.WorldToScreenPoint(playerController.gameObject.transform.position);
+      sliderToPlayer.y += 60;
+      uiManager.shotTimeOutSlider.gameObject.transform.position = sliderToPlayer;
+    }
+    else
+      uiManager.shotTimeOutSlider.gameObject.SetActive(false);
   }
 
   void InitializeGame()
   {
     scoreManager = new ScoreManager();
     scoreManager.InitScore();
-    uiManager.InitUI(playerController.GetPlayerHealth(), playerController.powerShot);
+    uiManager.InitUI(playerController.GetPlayerHealth(), playerController.powerShot, playerController.shotTimeOut);
     startCircleScale = closingCircleObject.transform.localScale;
     endCircleScale = new Vector3(endScale, endScale, 1.0f);
     circleCloseStart = false;
@@ -222,7 +138,7 @@ public class GameController : MonoBehaviour
   {
     while (!gameOver)
     {
-      Instantiate(enemy, spawnPoints[Random.Range(0, spawnPoints.Length)]);
+      Instantiate(enemies[0], spawnPoints[Random.Range(1, spawnPoints.Length)]);
       enemiesSpawned++;
       yield return new WaitForSeconds(2.0f);
     }

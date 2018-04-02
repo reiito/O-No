@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 58904330677975460}
   - component: {fileID: 114828824009816006}
   m_Layer: 0
-  m_Name: ShotPowerUp
+  m_Name: ShotPickUp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -6,7 +6,6 @@ public class ShotController : MonoBehaviour
 {
   public float speed = 100.0f;
   public float shotDamage = 10.0f;
-  public int popEnemyWorth = 10;
 
   GameController gameController;
   PlayerController playerController;
@@ -39,7 +38,7 @@ public class ShotController : MonoBehaviour
     // TODO: take health away from player
     if (collision.tag == "Player" && !gameController.GetGameOver())
     {
-      Destroy(this.gameObject);
+      Destroy(gameObject);
       playerController.DamagePlayer(shotDamage);
     }
 
@@ -47,18 +46,18 @@ public class ShotController : MonoBehaviour
     if (collision.tag == "Enemy")
     {
       // popcorn enemy collision action
-      Destroy(this.gameObject);
+      Destroy(gameObject);
 
       // make sure score and enemy is only updated once
       if (!enemyHit)
       {
-        if (collision.GetComponent<EnemyController>().GetHitsLeft() > 0)
-          collision.GetComponent<EnemyController>().Hit();
+        if (collision.GetComponent<Enemy>().hitsLeft > 0)
+          collision.GetComponent<Enemy>().hitsLeft--;
 
-        if (collision.GetComponent<EnemyController>().GetHitsLeft() == 0)
+        if (collision.GetComponent<Enemy>().hitsLeft == 0)
         {
           Destroy(collision.gameObject);
-          gameController.scoreManager.AddScore(popEnemyWorth);
+          gameController.scoreManager.AddScore((int)collision.GetComponent<Enemy>().worth);
           gameController.uiManager.UpdateScoreText(gameController.scoreManager.GetScore());
         }
 

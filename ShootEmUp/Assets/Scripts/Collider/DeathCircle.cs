@@ -17,6 +17,10 @@ public class DeathCircle : MonoBehaviour
     // player leaves the circle, KILL(slowly)
     if (collision.tag == "Player")
       gameController.SetDying(true);
+
+    // get rid of enemies when game is over
+    if (collision.tag == "Enemy" && gameController.GetGameOver())
+      Destroy(collision.gameObject);
   }
 
   private void OnTriggerEnter2D(Collider2D collision)
@@ -24,5 +28,9 @@ public class DeathCircle : MonoBehaviour
     // player re-enters the circle, ~safe
     if (collision.tag == "Player")
       gameController.SetDying(false);
+
+    // get rid of enemies when game is over
+    if (collision.tag == "Enemy" && gameController.GetGameOver())
+      Destroy(collision.gameObject);
   }
 }

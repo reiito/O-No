@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShotPowerUp : MonoBehaviour
+public class PickUp : MonoBehaviour
 {
-  PlayerController playerReference;
-  float destroyTime = 5f;
-  bool pickedUp = false;
+  protected PlayerController playerReference;
+  protected bool pickedUp = false;
 
+  float destroyTime = 5f;
   float angle = 0;
   float timeLeft;
   float speed = 2 * Mathf.PI;
-  float radius = 0.05f;
+  float radius = 0.025f;
   float minSpeed = 0.5f;
 
   float timeToggle;
-  float flickerRate = 0.5f;
+  float flickerRate = 0.25f;
 
   private void Awake()
   {
@@ -52,11 +52,4 @@ public class ShotPowerUp : MonoBehaviour
       Destroy(gameObject);
     }
   }
-
-  private void OnDestroy()
-  {
-    if (pickedUp)
-      playerReference.SetShotType(true);
-  }
 }
-

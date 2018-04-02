@@ -8,33 +8,34 @@ public class PlayerController : MonoBehaviour
   public float thrustForce = 50.0f;
 
   public GameObject shot;
-  public Transform shotSpawn;
+  public Transform[] shotSpawns = new Transform[3];
   public float fireRate = 1.0f;
   public int powerShot = 3;
+  public float shotTimeOut = 5.0f;
 
   GameController gameController;
   PowerController powerController;
   float rotationSize;
   float rotationSpeed;
-  float playerHealth;
+  float health;
+  float maxHealth;
   float dyingSpeed = 2.0f;
   bool powerInUse;
   bool staticControls;
   float nextFire = 0.0f;
   bool shotType = false;
+  float shotTimeLeft;
 
   // getters
-  public float GetPlayerHealth() { return playerHealth; }
+  public float GetPlayerHealth() { return health; }
+  public bool GetShotType() { return shotType; }
+  public float GetShotTimeLeft() { return shotTimeLeft; }
 
   // setters
   public void SetShotType(bool value) { shotType = value; }
 
-  // utility
-  public void AddHealth(float value)
-  {
-    playerHealth += value;
-    gameController.uiManager.UpdatePlayerHealthSlider(playerHealth);
-  }
+  // utitlity
+  public void ResetShotTimeLeft() { shotTimeLeft = shotTimeOut; }
 
   private void Start()
   {
@@ -47,21 +48,39 @@ public class PlayerController : MonoBehaviour
 
     powerInUse = false;
 
+    shotTimeLeft = shotTimeOut;
+
     // set control type from menu to use on player
     staticControls = Convert.ToBoolean(PlayerPrefs.GetInt("staticControls", 0));
 
     // initialise player health & slider
-    playerHealth = 100.0f;
-    gameController.uiManager.UpdatePlayerHealthSlider(playerHealth);
+    maxHealth = gameController.uiManager.playerHealthSlider.maxValue;
+    health = maxHealth;
+    gameController.uiManager.UpdatePlayerHealthSlider(health);
   }
 
   private void Update()
   {
+    if (shotType)
+    {
+      shotTimeLeft -= Time.deltaTime;
+      if (shotTimeLeft <= 0)
+      {
+        shotType = false;
+        shotTimeLeft = shotTimeOut;
+      }
+    }
+
     // fire shot with the given fire rate
     if (Input.GetButton("Jump") && Time.time > nextFire)
     {
       nextFire = Time.time + fireRate; //adjust fire rate
-      Instantiate(shot, new Vector3(shotSpawn.transform.position.x, shotSpawn.transform.position.y, shotSpawn.transform.position.z), transform.rotation); //spawn shot
+      Instantiate(shot, shotSpawns[0].position, shotSpawns[0].rotation); //normal spawn shot
+      if (shotType) //spawn special
+      {
+        Instantiate(shot, shotSpawns[1].position, shotSpawns[1].rotation);
+        Instantiate(shot, shotSpawns[2].position, shotSpawns[2].rotation);
+      }
     }
 
     if (Input.GetKeyDown("z") && powerShot != 0)
@@ -76,13 +95,10 @@ public class PlayerController : MonoBehaviour
 
     // chip away at the player's health while they're outside the circle
     if (gameController.GetDying())
-    {
-      playerHealth -= Time.deltaTime * dyingSpeed;
-      gameController.uiManager.UpdatePlayerHealthSlider(playerHealth);
-    }
+      DamagePlayer(Time.deltaTime * dyingSpeed);
 
     // game over check
-    if (playerHealth <= 0)
+    if (health <= 0)
       KillPlayer();
 
     // debug mode check
@@ -117,10 +133,10 @@ public class PlayerController : MonoBehaviour
   void DebugControls()
   {
     // kill switch
-    if (Input.GetKeyDown("1") && playerHealth > 0.0f)
+    if (Input.GetKeyDown("1") && health > 0.0f)
     {
-      playerHealth = 0.0f;
-      gameController.uiManager.UpdatePlayerHealthSlider(playerHealth);
+      health = 0.0f;
+      gameController.uiManager.UpdatePlayerHealthSlider(health);
       Debug.Log("[DEBUG] Player Manually Killed");
     }
 
@@ -134,7 +150,18 @@ public class PlayerController : MonoBehaviour
 
   public void DamagePlayer(float damage)
   {
-    playerHealth -= damage;
-    gameController.uiManager.UpdatePlayerHealthSlider(playerHealth);
+    health -= damage;
+    gameController.uiManager.UpdatePlayerHealthSlider(health);
+  }
+
+  public void AddHealth(float value)
+  {
+    if (health < maxHealth)
+    {
+      health += value;
+      if (health > maxHealth)
+        health = maxHealth;
+      gameController.uiManager.UpdatePlayerHealthSlider(health);
+    }
   }
 }
