@@ -4,22 +4,24 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-  public GameObject[] pickUps = new GameObject[2];
-  // enemy specific
-  public float speed;
-  public float dropRate;
-  public float worth;
-  public int hitsLeft;
-
-  GameController gameController;
-  protected bool collided = false;
+  protected GameController gameController;
 
   protected GameObject player;
+
+  // enemy specific
+  protected float speed;
+  protected float scoreWorth;
+  protected float damageToPlayer;
+  protected int hitsLeft;
 
   // health reference
   protected float healthRate;
   protected float playerHealth;
   protected float totalPlayerHealth;
+
+  public float GetScoreWorth() { return scoreWorth; }
+  public float GetDamageToPlayer() { return damageToPlayer; }
+  public int GetHitsLeft() { return hitsLeft; }
 
   // MonoBehaviour functions
 
@@ -35,7 +37,7 @@ public class Enemy : MonoBehaviour
   {
     // follow player
     if (player && !gameController.GetGamePaused())
-      FollowPlayer();
+      Follow();
     else if (gameController.GetGameOver())
       Destroy(gameObject);
 
@@ -43,20 +45,16 @@ public class Enemy : MonoBehaviour
       playerHealth = player.GetComponent<PlayerController>().GetPlayerHealth();
   }
 
-  private void OnTriggerEnter2D(Collider2D collision)
-  {
-    if (collision.tag == "Player") //die on player contact
-    {
-      collided = true;
-      Destroy(gameObject);
-    }
-  }
-
 
   // Non-MonoBehaviour Functions
 
+  public void DamageEnemy()
+  {
+    hitsLeft--;
+  }
+
   // movement behaviour
-  void FollowPlayer()
+  protected virtual void Follow()
   {
     // face player
     Vector3 difference = player.GetComponent<Transform>().position - transform.position;

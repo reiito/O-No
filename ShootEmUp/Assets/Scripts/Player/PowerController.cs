@@ -18,7 +18,7 @@ public class PowerController : MonoBehaviour
   private void OnTriggerEnter2D(Collider2D collision)
   {
     if (collision.tag == "Enemy")
-      GetComponentInParent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+        GetComponentInParent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
     else if (collision.tag == "Shot")
       Destroy(collision.gameObject);
   }

@@ -9,7 +9,8 @@ public class ShotController : MonoBehaviour
 
   GameController gameController;
   PlayerController playerController;
-  bool enemyHit;
+  bool playerHit = false;
+  bool enemyHit = false;
 
   public void Start()
   {
@@ -20,7 +21,6 @@ public class ShotController : MonoBehaviour
 
     // move shot in its forward facing direction
     GetComponent<Rigidbody2D>().AddForce(transform.up * speed);
-    enemyHit = false;
   }
 
   private void OnTriggerEnter2D(Collider2D collision)
@@ -35,29 +35,29 @@ public class ShotController : MonoBehaviour
       Destroy(collision.gameObject);
     }
 
-    // TODO: take health away from player
+    // takes health away from player
     if (collision.tag == "Player" && !gameController.GetGameOver())
     {
+      playerHit = true;
       Destroy(gameObject);
-      playerController.DamagePlayer(shotDamage);
     }
 
-    // TODO: enemy collision behaviour
+    // enemy collision behaviour
     if (collision.tag == "Enemy")
     {
-      // popcorn enemy collision action
-      Destroy(gameObject);
-
       // make sure score and enemy is only updated once
       if (!enemyHit)
       {
-        if (collision.GetComponent<Enemy>().hitsLeft > 0)
-          collision.GetComponent<Enemy>().hitsLeft--;
+        // destroy shot
+        Destroy(gameObject);
 
-        if (collision.GetComponent<Enemy>().hitsLeft == 0)
+        if (collision.GetComponent<Enemy>().GetHitsLeft() > 0)
+          collision.GetComponent<Enemy>().DamageEnemy();
+
+        if (collision.GetComponent<Enemy>().GetHitsLeft() == 0)
         {
           Destroy(collision.gameObject);
-          gameController.scoreManager.AddScore((int)collision.GetComponent<Enemy>().worth);
+          gameController.scoreManager.AddScore((int)collision.GetComponent<Enemy>().GetScoreWorth());
           gameController.uiManager.UpdateScoreText(gameController.scoreManager.GetScore());
         }
 
@@ -71,5 +71,11 @@ public class ShotController : MonoBehaviour
   {
     if (collision.tag == "Boundry")
       Destroy(gameObject);
+  }
+
+  private void OnDestroy()
+  {
+    if (playerHit)
+      playerController.DamagePlayer(shotDamage);
   }
 }

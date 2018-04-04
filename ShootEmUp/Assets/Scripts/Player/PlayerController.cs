@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
 
   public GameObject shot;
   public Transform[] shotSpawns = new Transform[3];
+  public Transform respawn;
   public float fireRate = 1.0f;
   public int powerShot = 3;
   public float shotTimeOut = 5.0f;
@@ -36,6 +37,9 @@ public class PlayerController : MonoBehaviour
 
   // utitlity
   public void ResetShotTimeLeft() { shotTimeLeft = shotTimeOut; }
+
+
+  // MonoBehaviour Functions
 
   private void Start()
   {
@@ -124,12 +128,31 @@ public class PlayerController : MonoBehaviour
     );
   }
 
+  private void OnTriggerEnter2D(Collider2D collision)
+  {
+    if (collision.tag == "Enemy")
+    {
+      DamagePlayer(collision.GetComponent<Enemy>().GetDamageToPlayer());
+      if (!collision.GetComponent<BossEnemy>())
+        Destroy(collision.gameObject);
+      else
+      {
+        transform.position = respawn.position;
+      }
+    }
+  }
+
+
+  // Non-MonoBehaviour Functions
+
+  //
   void KillPlayer()
   {
     gameController.SetGameOver(true);
     Destroy(gameObject);
   }
 
+  //
   void DebugControls()
   {
     // kill switch
@@ -148,12 +171,14 @@ public class PlayerController : MonoBehaviour
     }
   }
 
+  //
   public void DamagePlayer(float damage)
   {
     health -= damage;
     gameController.uiManager.UpdatePlayerHealthSlider(health);
   }
 
+  //
   public void AddHealth(float value)
   {
     if (health < maxHealth)

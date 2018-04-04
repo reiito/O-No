@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PickUp : MonoBehaviour
 {
+  GameController gameController;
+
   protected PlayerController playerReference;
   protected bool pickedUp = false;
 
@@ -19,6 +21,7 @@ public class PickUp : MonoBehaviour
 
   private void Awake()
   {
+    gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
     playerReference = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
     timeLeft = destroyTime;
     Destroy(gameObject, destroyTime);
@@ -26,6 +29,9 @@ public class PickUp : MonoBehaviour
 
   private void Update()
   {
+    if (gameController.GetGameOver())
+      Destroy(gameObject);
+
     if (timeLeft > minSpeed)
       timeLeft -= Time.deltaTime;
     angle += Time.deltaTime * (speed / timeLeft);
