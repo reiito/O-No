@@ -10,8 +10,8 @@ public class PowerController : MonoBehaviour
 
   private void Start()
   {
-    maxScale = new Vector3(15.0f, 15.0f, 15.0f);
-    minScale = new Vector3(0.1f, 0.1f, 0.1f);
+    maxScale = new Vector3(2.5f, 2.5f, 2.5f);
+    minScale = new Vector3(0.0f, 0.0f, 0.0f);
     expandRate = 0.25f;
   }
 

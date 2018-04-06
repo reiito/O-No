@@ -19,7 +19,7 @@ public class DeathCircle : MonoBehaviour
       gameController.SetDying(true);
 
     // get rid of enemies when game is over
-    if (collision.tag == "Enemy" && gameController.GetGameOver())
+    if (collision.tag == "Enemy" || collision.tag == "PickUp" && gameController.GetGameOver())
       Destroy(collision.gameObject);
   }
 

@@ -5,6 +5,7 @@ using UnityEngine;
 public class BossEnemy : Enemy
 {
   public Transform[] spawnPoints = new Transform[4];
+  public GameObject spawnPortal;
 
   Transform endPoint;
 
@@ -26,6 +27,22 @@ public class BossEnemy : Enemy
     StartCoroutine(SpawnBossStuff());
   }
 
+  private void Update()
+  {
+    // follow player
+    if (player && !gameController.GetGamePaused())
+      Follow();
+
+    if (gameController.GetGameOver())
+    {
+      StopAllCoroutines();
+      Destroy(gameObject);
+    }
+
+    if (playerHealth > 0)
+      playerHealth = player.GetComponent<PlayerController>().GetPlayerHealth();
+  }
+
   protected override void Follow()
   {
     transform.position = Vector3.MoveTowards(transform.position, endPoint.position, speed);
@@ -37,16 +54,19 @@ public class BossEnemy : Enemy
     {
       float total = shotRate + popRate + strRate;
       float random = Random.Range(0, total);
+
+      Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
       GameObject spawnedObject;
+      Instantiate(spawnPortal, spawnPoint.position, spawnPoint.rotation);
       if (random >= shotRate)
-        spawnedObject = Instantiate(shot, spawnPoints[Random.Range(0, spawnPoints.Length)].position, new Quaternion(0, 0, 180, 0), transform);
+        spawnedObject = Instantiate(shot, spawnPoint.position, new Quaternion(0, 0, 180, 0), transform);
       else if (random >= strRate && random <= shotRate)
-        spawnedObject = Instantiate(pop, spawnPoints[Random.Range(0, spawnPoints.Length)].position, new Quaternion(0, 0, 0, 0), transform);
+        spawnedObject = Instantiate(pop, spawnPoint.position, new Quaternion(0, 0, 180, 0), transform);
       else
-        spawnedObject = Instantiate(str, spawnPoints[Random.Range(0, spawnPoints.Length)].position, new Quaternion(0, 0, 0, 0), transform);
+        spawnedObject = Instantiate(str, spawnPoint.position, new Quaternion(0, 0, 180, 0), transform);
 
       if (spawnedObject.GetComponent<PopEnemy>() || spawnedObject.GetComponent<StrEnemy>())
-        spawnedObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        spawnedObject.transform.localScale /= 2;
 
       yield return new WaitForSeconds(1.0f);
     }

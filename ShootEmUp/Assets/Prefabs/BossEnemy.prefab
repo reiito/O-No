@@ -50,7 +50,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4133536989447704}
   - component: {fileID: 212796632350266900}
-  - component: {fileID: 60640267511960048}
+  - component: {fileID: 60576950028703772}
   - component: {fileID: 114052743524143458}
   m_Layer: 9
   m_Name: BossEnemy
@@ -70,21 +70,6 @@ GameObject:
   - component: {fileID: 60079229377513422}
   m_Layer: 9
   m_Name: HitBox
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!1 &1757977376936130
-GameObject:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 4844492873075798}
-  m_Layer: 9
-  m_Name: Middle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -142,11 +127,11 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1186379547382350}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.75, y: -1.25, z: 0}
+  m_LocalPosition: {x: 13.5, y: -5.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4036144367674646}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4036144367674646
 Transform:
@@ -160,7 +145,6 @@ Transform:
   m_Children:
   - {fileID: 4899636331516920}
   - {fileID: 4885824315286320}
-  - {fileID: 4844492873075798}
   - {fileID: 4443061868125536}
   - {fileID: 4028779593827056}
   m_Father: {fileID: 4133536989447704}
@@ -173,8 +157,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1471022643314686}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 35.88, z: 0}
-  m_LocalScale: {x: 5.25, y: 5.25, z: 1}
+  m_LocalPosition: {x: 0, y: 40, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
   - {fileID: 4673012873457614}
   - {fileID: 4036144367674646}
@@ -188,11 +172,11 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1026816057565282}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3, y: -2.25, z: 0}
+  m_LocalPosition: {x: 10.3, y: -5.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4036144367674646}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4673012873457614
 Transform:
@@ -207,19 +191,6 @@ Transform:
   m_Father: {fileID: 4133536989447704}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &4844492873075798
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1757977376936130}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -2.75, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4036144367674646}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4885824315286320
 Transform:
   m_ObjectHideFlags: 1
@@ -227,7 +198,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1872504287086258}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3, y: -2.25, z: 0}
+  m_LocalPosition: {x: -10.3, y: -5.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4036144367674646}
@@ -240,7 +211,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1909985710251644}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.75, y: -1.25, z: 0}
+  m_LocalPosition: {x: -13.5, y: -5.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4036144367674646}
@@ -270,10 +241,17 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0, y: -2.45}
-      - {x: -6.85, y: -0.45}
-      - {x: 6.85, y: -0.45}
---- !u!60 &60640267511960048
+    - - {x: -1.6, y: -8.3}
+      - {x: 1.6, y: -8.3}
+      - {x: 7.8, y: -5}
+      - {x: 15.3, y: -4.6}
+      - {x: 13.8, y: 4}
+      - {x: 7.25, y: 8.5}
+      - {x: -7.25, y: 8.5}
+      - {x: -13.8, y: 4}
+      - {x: -15.3, y: -4.6}
+      - {x: -7.8, y: -5}
+--- !u!60 &60576950028703772
 PolygonCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -289,17 +267,24 @@ PolygonCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 13.66, y: 5}
-    newSize: {x: 2.5, y: 2.5}
+    oldSize: {x: 29.44, y: 15.520001}
+    newSize: {x: 29.44, y: 15.520001}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0, y: -2.3}
-      - {x: -6.85, y: -0.33}
-      - {x: 6.85, y: -0.33}
+    - - {x: -1.6, y: -8.3}
+      - {x: 1.6, y: -8.3}
+      - {x: 7.8, y: -5}
+      - {x: 15.3, y: -4.6}
+      - {x: 13.8, y: 4}
+      - {x: 7.25, y: 8.5}
+      - {x: -7.25, y: 8.5}
+      - {x: -13.8, y: 4}
+      - {x: -15.3, y: -4.6}
+      - {x: -7.8, y: -5}
 --- !u!114 &114052743524143458
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -316,7 +301,9 @@ MonoBehaviour:
   - {fileID: 4885824315286320}
   - {fileID: 4443061868125536}
   - {fileID: 4028779593827056}
-  shot: {fileID: 1873077030944450, guid: ad986e1e54e73f4449a175136ef92163, type: 2}
+  spawnPortal: {fileID: 1529216376014080, guid: 3e5a3814ba4f4044fa7bda039c8748b4,
+    type: 2}
+  shot: {fileID: 1873077030944450, guid: 03d8a1a7ba91d3846b5a05604621fd8a, type: 2}
   pop: {fileID: 1596594007315440, guid: 56969325d0e21584dbcb685eaecdd9e8, type: 2}
   str: {fileID: 1781546090322730, guid: 12d88fdc6bd19594cb337b4553b104cc, type: 2}
 --- !u!212 &212796632350266900
@@ -350,15 +337,15 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 63493699
+  m_SortingLayer: 4
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: c912171600970a2409e55022f8181748, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 1cea3c44a5df68a42ae6184aa7958abb, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.5, y: 2.5}
+  m_Size: {x: 29.44, y: 15.520001}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PickUp : MonoBehaviour
 {
-  GameController gameController;
+  protected GameController gameController;
 
   protected PlayerController playerReference;
   protected bool pickedUp = false;
@@ -19,7 +19,7 @@ public class PickUp : MonoBehaviour
   float timeToggle;
   float flickerRate = 0.25f;
 
-  private void Awake()
+  private void Start()
   {
     gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
     playerReference = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();

@@ -25,9 +25,6 @@ public class PopEnemy : Enemy
 
   private void OnDestroy()
   {
-    if (gameController.GetGameOver())
-      return;
-
     // increase drop rate of health if player health is low
     if (playerHealth < totalPlayerHealth / 2)
       healthRate = 0.75f;

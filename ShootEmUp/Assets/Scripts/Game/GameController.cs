@@ -66,10 +66,10 @@ public class GameController : MonoBehaviour
     gamePaused = false;
     gameOver = false;
     won = false;
-    debugging = true;
+    debugging = false;
 
     // death circle
-    circleSpeed = 0.03f;
+    circleSpeed = 0.02f;
     endCircleSpeed = 5.0f;
     startCircleScale = closingCircleObject.transform.localScale;
     endCircleScale = new Vector3(endScale, endScale, 1.0f);
@@ -200,6 +200,8 @@ public class GameController : MonoBehaviour
   // quit game
   void QuitGame()
   {
+    gameOver = true;
+
     if (debugging)
 #if UNITY_EDITOR
       UnityEditor.EditorApplication.isPlaying = false;

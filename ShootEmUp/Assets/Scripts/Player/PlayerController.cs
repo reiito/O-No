@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -9,12 +9,14 @@ public class PlayerController : MonoBehaviour
 
   public GameObject shot;
   public Transform[] shotSpawns = new Transform[3];
-  public Transform respawn;
+  public GameObject respawn;
+  public Transform respawnPos;
   public float fireRate = 1.0f;
   public int powerShot = 3;
   public float shotTimeOut = 5.0f;
 
   GameController gameController;
+  Animator playerAnimator;
   PowerController powerController;
   float rotationSize;
   float rotationSpeed;
@@ -61,6 +63,8 @@ public class PlayerController : MonoBehaviour
     maxHealth = gameController.uiManager.playerHealthSlider.maxValue;
     health = maxHealth;
     gameController.uiManager.UpdatePlayerHealthSlider(health);
+
+    playerAnimator = GetComponent<Animator>();
   }
 
   private void Update()
@@ -113,6 +117,16 @@ public class PlayerController : MonoBehaviour
   private void FixedUpdate()
   {
     // rotate player
+    if (Input.GetAxis("Horizontal") > 0) //turing left
+      playerAnimator.SetBool("TurningRight", true);
+    else if (Input.GetAxis("Horizontal") < 0)
+      playerAnimator.SetBool("TurningLeft", true);
+    else
+    {
+      playerAnimator.SetBool("TurningLeft", false);
+      playerAnimator.SetBool("TurningRight", false);
+    }
+
     transform.Rotate(0, 0, -Input.GetAxis("Horizontal") * rotationSize * (Time.deltaTime / rotationSpeed));
     // switch control type
     if (!staticControls) //move player
@@ -137,7 +151,8 @@ public class PlayerController : MonoBehaviour
         Destroy(collision.gameObject);
       else
       {
-        transform.position = respawn.position;
+        Instantiate(respawn, transform.position, transform.rotation);
+        StartCoroutine(RespawnWait());
       }
     }
   }
@@ -188,5 +203,16 @@ public class PlayerController : MonoBehaviour
         health = maxHealth;
       gameController.uiManager.UpdatePlayerHealthSlider(health);
     }
+  }
+
+  IEnumerator RespawnWait()
+  {
+    playerAnimator.SetTrigger("Shrink");
+    Instantiate(respawn, transform.position, transform.rotation);
+    yield return new WaitForSeconds(playerAnimator.GetCurrentAnimatorStateInfo(0).length);
+    transform.position = respawnPos.position;
+    yield return new WaitForSeconds(0.5f);
+    Instantiate(respawn, transform.position, transform.rotation);
+    playerAnimator.SetTrigger("Expand");
   }
 }
